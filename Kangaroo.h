@@ -35,7 +35,7 @@ typedef int SOCKET;
 #include <netinet/tcp.h>
 #include <signal.h>
 #endif
-
+#include <map>
 #include <string>
 #include <vector>
 #include "SECPK1/SECP256k1.h"
@@ -130,7 +130,7 @@ public:
 
   Kangaroo(Secp256K1 *secp,int32_t initDPSize,bool useGpu,std::string &workFile,std::string &iWorkFile,
            uint32_t savePeriod,bool saveKangaroo,bool saveKangarooByServer,double maxStep,int wtimeout,int sport,int ntimeout,
-           std::string serverIp,std::string outputFile,bool splitWorkfile);
+           std::string serverIp,std::string outputFile,bool splitWorkfile, std::string countFile, int countPeriod);
   void Run(int nbThread,std::vector<int> gpuId,std::vector<int> gridSize);
   void RunServer();
   bool ParseConfigFile(std::string &fileName);
@@ -177,9 +177,11 @@ private:
   bool Output(Int* pk,char sInfo,int sType);
 
   // Backup stuff
+  void SaveDPStats(std::string fileName,FILE *f);
   void SaveWork(std::string fileName,FILE *f,int type,uint64_t totalCount,double totalTime);
   void SaveWork(uint64_t totalCount,double totalTime,TH_PARAM *threads,int nbThread);
   void SaveServerWork();
+  void SaveServerDPStats();
   void FetchWalks(uint64_t nbWalk,Int *x,Int *y,Int *d);
   void FetchWalks(uint64_t nbWalk,std::vector<int128_t>& kangs,Int* x,Int* y,Int* d);
   void FectchKangaroos(TH_PARAM *threads);
@@ -257,6 +259,9 @@ private:
   double expectedMem;
   double maxStep;
   uint64_t totalRW;
+  uint64_t nDPs; // Used by client
+  // Used by server to map addresses to DP counts
+  std::map<char *, uint64_t> clientDPCount;
 
   Int jumpDistance[NB_JUMP];
   Int jumpPointx[NB_JUMP];
@@ -265,6 +270,7 @@ private:
   int CPU_GRP_SIZE;
 
   // Backup stuff
+  std::string countFile;
   std::string outputFile;
   FILE *fRead;
   uint64_t offsetCount;
@@ -273,7 +279,9 @@ private:
   std::string workFile;
   std::string inputFile;
   int  saveWorkPeriod;
+  int  saveCountPeriod;
   bool saveRequest;
+  bool saveCountRequest;
   bool saveKangaroo;
   bool saveKangarooByServer;
   int wtimeout;

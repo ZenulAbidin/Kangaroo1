@@ -41,6 +41,8 @@ void printUsage() {
   printf(" -g g1x,g1y,g2x,g2y,...: Specify GPU(s) kernel gridsize, default is 2*(MP),2*(Core/MP)\n");
   printf(" -d: Specify number of leading zeros for the DP method (default is auto)\n");
   printf(" -t nbThread: Secify number of thread\n");
+  printf(" -dpcount countfile: Specify file to save running DP count stats into (server only)\n");
+  printf(" -dpi countInverval: Periodic interval (in seconds) for saving DP count stats (server only)\n");
   printf(" -w workfile: Specify file to save work into (current processed key only)\n");
   printf(" -i workfile: Specify file to load work from (current processed key only)\n");
   printf(" -wi workInterval: Periodic interval (in seconds) for saving work\n");
@@ -147,7 +149,9 @@ static vector<int> gridSize;
 static string workFile = "";
 static string checkWorkFile = "";
 static string iWorkFile = "";
+static string countFile = "";
 static uint32_t savePeriod = 60;
+static uint32_t countPeriod = 60;
 static bool saveKangaroo = false;
 static bool saveKangarooByServer = false;
 static string merge1 = "";
@@ -207,6 +211,14 @@ int main(int argc, char* argv[]) {
     } else if(strcmp(argv[a],"-w") == 0) {
       CHECKARG("-w",1);
       workFile = string(argv[a]);
+      a++;
+    } else if(strcmp(argv[a],"-dpcount") == 0) {
+      CHECKARG("-dpcount",1);
+      countFile = string(argv[a]);
+      a++;
+    } else if(strcmp(argv[a],"-dpi") == 0) {
+      CHECKARG("-dpi",1);
+      countPeriod = getInt("dpCountInterval", argv[a]);
       a++;
     } else if(strcmp(argv[a],"-i") == 0) {
       CHECKARG("-i",1);
@@ -308,6 +320,11 @@ int main(int argc, char* argv[]) {
 
   }
 
+  if (countFile != "" && !serverMode) {
+    printf("Error: -dpcount requires server mode (-s)");
+    exit(-1);
+  }
+
   if(gridSize.size() == 0) {
     for(int i = 0; i < gpuId.size(); i++) {
       gridSize.push_back(0);
@@ -319,7 +336,7 @@ int main(int argc, char* argv[]) {
   }
 
   Kangaroo *v = new Kangaroo(secp,dp,gpuEnable,workFile,iWorkFile,savePeriod,saveKangaroo,saveKangarooByServer,
-                             maxStep,wtimeout,port,ntimeout,serverIP,outputFile,splitWorkFile);
+                             maxStep,wtimeout,port,ntimeout,serverIP,outputFile,splitWorkFile,countFile,countPeriod);
   if(checkFlag) {
     v->Check(gpuId,gridSize);  
     exit(0);

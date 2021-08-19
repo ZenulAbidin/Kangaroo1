@@ -42,7 +42,7 @@ static SOCKET serverSock = 0;
 #define WAIT_FOR_READ  1
 #define WAIT_FOR_WRITE 2
 
-#define SERVER_VERSION 3
+#define SERVER_VERSION 4
 
 #define SERVER_HEADER 0x67DEDDC1
 
@@ -55,12 +55,14 @@ static SOCKET serverSock = 0;
 #define SERVER_SETKNB    3
 #define SERVER_SAVEKANG  4
 #define SERVER_LOADKANG  5
+#define SERVER_SAVEDPCOUNT  6
 #define SERVER_RESETDEAD  'R'
 
 // Status
 #define SERVER_OK            0
 #define SERVER_END           1
 #define SERVER_BACKUP        2
+#define SERVER_LOGDPCOUNT    3
 
 
 #ifdef WIN64
@@ -267,6 +269,10 @@ int32_t Kangaroo::GetServerStatus() {
     return SERVER_BACKUP;
   }
 
+  if(saveCountRequest) {
+    return SERVER_LOGDPCOUNT;
+  }
+
   return SERVER_OK;
 
 }
@@ -413,6 +419,9 @@ bool Kangaroo::HandleRequest(TH_PARAM *p) {
     } break;
 
     // ----------------------------------------------------------------------------------------
+    case SERVER_SAVEDPCOUNT: {
+        PUT("DPcount",p->clientSock,&nDPs,sizeof(int32_t),ntimeout);
+    }
 
     case SERVER_SAVEKANG: {
 
@@ -528,7 +537,14 @@ bool Kangaroo::HandleRequest(TH_PARAM *p) {
 
       } else {
 
-        //::printf("%d DP from %s\n",nbDP,p->clientInfo.c_str());
+        auto& it = clientDPCount.find(p->clientInfo);
+        if (it == clientDPCount.end()) {
+          clientDPCount[p->clientInfo] = *it+head.nbDP;
+        } else {
+          clientDPCount.insert(std::pair<char*,uint64_t>(p->clientInfo, head.nbDP));
+        }
+
+        ::printf("%d DP from %s (total %lld), \n",head.nbDP, p->clientInfo, clientDPCount[p->clientInfo]);
 
         DP *dp = (DP *)malloc(sizeof(DP)* head.nbDP);
         GETFREE("DP",p->clientSock,dp,sizeof(DP)* head.nbDP,ntimeout,dp);
@@ -591,7 +607,7 @@ bool Kangaroo::HandleRequest(TH_PARAM *p) {
           dc.dp = dp;
           recvDP.push_back(dc);
           UNLOCK(ghMutex);
-
+          nDPs += head.nbDP;
         }
 
       }
@@ -963,6 +979,10 @@ void Kangaroo::WaitForServer() {
             ok = true;
             break;
 
+          case SERVER_LOGDPCOUNT:
+            serverStatus = "logDPcount";
+            break;
+
           case SERVER_BACKUP:
             serverStatus = "Backup";
             Timer::SleepMillis(1000);
@@ -1234,10 +1254,10 @@ bool Kangaroo::GetConfigFromServer() {
   GET("KeyY",serverConn,key.y.bits64,32,ntimeout);
   GET("DP",serverConn,&initDPSize,sizeof(int32_t),ntimeout);
 
-  if(version<3) {
+  if(version<4) {
     isConnected = false;
     close_socket(serverConn);
-    ::printf("Cannot connect to server: %s\nServer version must be >= 3\n",serverIp.c_str());
+    ::printf("Cannot connect to server: %s\nServer version must be >= 4\n",serverIp.c_str());
     return false;
   }
 

@@ -393,6 +393,64 @@ bool Kangaroo::SaveHeader(string fileName,FILE* f,int type,uint64_t totalCount,d
   return true;
 }
 
+
+void Kangaroo::SaveDPStats(string fileName,FILE *f) {
+  /*
+   * DO NOT change the line ending, this is to make the file human-readable
+   * on Windows and Unix while simultaneously being machine-processed as a
+   * CSV file.
+   */
+  const char* sep = ",", lf = "\r\n", totalStr = "Total";
+  ::printf("\nSaveDPStats: %s",fileName.c_str());
+  uint64_t total = 0;
+
+  for (auto it = clientDPCount.begin(); it != clientDPCount.end(); it++) {
+    ::fwrite(&it->first,sizeof(char),strlen(it->first),f);
+    ::fwrite(&sep,sizeof(char),1,f);
+    ::fwrite(&it->second,sizeof(uint64_t),1,f);
+    ::fwrite(&lf,sizeof(char),2,f);
+    total += it->second;
+  }
+
+  ::fwrite(&totalStr,sizeof(char),strlen(totalStr),f);
+  ::fwrite(&sep,sizeof(char),1,f);
+  ::fwrite(&it->second,sizeof(uint64_t),1,f);
+  ::fwrite(&lf,sizeof(char),2,f);
+  return total;
+}
+
+void Kangaroo::SaveServerDPStats() {
+
+  saveCountRequest = true;
+
+  double t0 = Timer::get_tick();
+
+  string fileName = countFile;
+
+  FILE *f = fopen(fileName.c_str(),"wb");
+  if(f == NULL) {
+    ::printf("\nSaveCount: Cannot open %s for writing\n",fileName.c_str());
+    ::printf("%s\n",::strerror(errno));
+    saveCountRequest = false;
+    return;
+  }
+
+  SaveDPStats(fileName, f);
+
+  uint64_t size = FTell(f);
+  fclose(f);
+
+  double t1 = Timer::get_tick();
+
+  char *ctimeBuff;
+  time_t now = time(NULL);
+  ctimeBuff = ctime(&now);
+  ::printf("done [%.1f MB] [%s] %s",(double)size / (1024.0*1024.0),GetTimeStr(t1 - t0).c_str(),ctimeBuff);
+
+  saveCountRequest = false;
+
+}
+
 void  Kangaroo::SaveWork(string fileName,FILE *f,int type,uint64_t totalCount,double totalTime) {
 
   ::printf("\nSaveWork: %s",fileName.c_str());

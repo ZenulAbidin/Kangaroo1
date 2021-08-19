@@ -34,7 +34,7 @@ using namespace std;
 // ----------------------------------------------------------------------------
 
 Kangaroo::Kangaroo(Secp256K1 *secp,int32_t initDPSize,bool useGpu,string &workFile,string &iWorkFile,uint32_t savePeriod,bool saveKangaroo,bool saveKangarooByServer,
-                   double maxStep,int wtimeout,int port,int ntimeout,string serverIp,string outputFile,bool splitWorkfile) {
+                   double maxStep,int wtimeout,int port,int ntimeout,string serverIp,string outputFile,bool splitWorkfile,std::string countFile, int countPeriod) {
 
   this->secp = secp;
   this->initDPSize = initDPSize;
@@ -42,7 +42,9 @@ Kangaroo::Kangaroo(Secp256K1 *secp,int32_t initDPSize,bool useGpu,string &workFi
   this->offsetCount = 0;
   this->offsetTime = 0.0;
   this->workFile = workFile;
+  this->countFile = countFile;
   this->saveWorkPeriod = savePeriod;
+  this->saveCountPeriod = countPeriod;
   this->inputFile = iWorkFile;
   this->nbLoadedWalk = 0;
   this->clientMode = serverIp.length() > 0;
@@ -58,12 +60,14 @@ Kangaroo::Kangaroo(Secp256K1 *secp,int32_t initDPSize,bool useGpu,string &workFi
   this->hostInfo = NULL;
   this->endOfSearch = false;
   this->saveRequest = false;
+  this->saveCountRequest = false;
   this->connectedClient = 0;
   this->totalRW = 0;
   this->collisionInSameHerd = 0;
   this->keyIdx = 0;
   this->splitWorkfile = splitWorkfile;
   this->pid = Timer::getPID();
+  this->nDPs = 0;
 
   CPU_GRP_SIZE = 1024;
 
@@ -482,7 +486,7 @@ void Kangaroo::SolveKeyCPU(TH_PARAM *ph) {
     }
 
     // Save request
-    if(saveRequest && !endOfSearch) {
+    if((saveRequest || saveCountRequest) && !endOfSearch) {
       ph->isWaiting = true;
       LOCK(saveMutex);
       ph->isWaiting = false;
@@ -615,7 +619,7 @@ void Kangaroo::SolveKeyGPU(TH_PARAM *ph) {
     }
 
     // Save request
-    if(saveRequest && !endOfSearch) {
+    if((saveRequest || saveCountRequest) && !endOfSearch) {
       // Get kangaroos
       if(saveKangaroo)
         gpu->GetKangaroos(ph->px,ph->py,ph->distance);

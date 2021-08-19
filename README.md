@@ -20,7 +20,7 @@ Discusion thread: https://bitcointalk.org/index.php?topic=5244940.0
 # Usage
 
 ```
-Kangaroo v2.1
+Kangaroo v2.3
 Kangaroo [-v] [-t nbThread] [-d dpBit] [gpu] [-check]
          [-gpuId gpuId1[,gpuId2,...]] [-g g1x,g1y[,g2x,g2y,...]]
          inFile
@@ -30,6 +30,8 @@ Kangaroo [-v] [-t nbThread] [-d dpBit] [gpu] [-check]
  -g g1x,g1y,g2x,g2y,...: Specify GPU(s) kernel gridsize, default is 2*(MP),2*(Core/MP)
  -d: Specify number of leading zeros for the DP method (default is auto)
  -t nbThread: Secify number of thread
+ -dpcount countfile: Specify file to save running DP count stats into (server only)
+ -dpi countInverval: Periodic interval (in seconds) for saving DP count stats (server only)
  -w workfile: Specify file to save work into (current processed key only)
  -i workfile: Specify file to load work from (current processed key only)
  -wi workInterval: Periodic interval (in seconds) for saving work

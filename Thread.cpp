@@ -169,6 +169,7 @@ void Kangaroo::ProcessServer() {
   t0 = Timer::get_tick();
   startTime = t0;
   double lastSave = 0;
+  double lastCount = 0;
 
   // Acquire mutex ownership
 #ifndef WIN64
@@ -227,6 +228,10 @@ void Kangaroo::ProcessServer() {
         SaveServerWork();
         lastSave = t1;
       }
+    if(countFile.length() > 0) {
+      if((t1 - lastCountSave) > saveCountPeriod) {
+        SaveServerDPStats();
+        lastCountSave = t1;
     }
 
   }
