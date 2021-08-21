@@ -169,7 +169,7 @@ void Kangaroo::ProcessServer() {
   t0 = Timer::get_tick();
   startTime = t0;
   double lastSave = 0;
-  double lastCount = 0;
+  double lastCountSave = 0;
 
   // Acquire mutex ownership
 #ifndef WIN64
