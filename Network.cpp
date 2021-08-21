@@ -537,14 +537,14 @@ bool Kangaroo::HandleRequest(TH_PARAM *p) {
 
       } else {
 
-        auto& it = clientDPCount.find(p->clientInfo);
+        auto it = clientDPCount.find(p->clientInfo);
         if (it == clientDPCount.end()) {
-          clientDPCount[p->clientInfo] = *it+head.nbDP;
+          clientDPCount[p->clientInfo] = it->second+head.nbDP;
         } else {
           clientDPCount.insert(std::pair<char*,uint64_t>(p->clientInfo, head.nbDP));
         }
 
-        ::printf("%d DP from %s (total %lld), \n",head.nbDP, p->clientInfo, clientDPCount[p->clientInfo]);
+        ::printf("%d DP from %s (total %lu), \n",head.nbDP, p->clientInfo, clientDPCount[p->clientInfo]);
 
         DP *dp = (DP *)malloc(sizeof(DP)* head.nbDP);
         GETFREE("DP",p->clientSock,dp,sizeof(DP)* head.nbDP,ntimeout,dp);
