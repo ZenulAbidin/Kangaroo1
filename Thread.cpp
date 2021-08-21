@@ -228,10 +228,12 @@ void Kangaroo::ProcessServer() {
         SaveServerWork();
         lastSave = t1;
       }
+    }
     if(countFile.length() > 0) {
       if((t1 - lastCountSave) > saveCountPeriod) {
         SaveServerDPStats();
         lastCountSave = t1;
+      }
     }
 
   }
