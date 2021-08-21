@@ -400,7 +400,9 @@ void Kangaroo::SaveDPStats(string fileName,FILE *f) {
    * on Windows and Unix while simultaneously being machine-processed as a
    * CSV file.
    */
-  const char* sep = ",", lf = "\r\n", totalStr = "Total";
+  const char* sep = ",";
+  const char* lf = "\r\n";
+  const char* totalStr = "Total";
   ::printf("\nSaveDPStats: %s",fileName.c_str());
   uint64_t total = 0;
 
@@ -414,9 +416,8 @@ void Kangaroo::SaveDPStats(string fileName,FILE *f) {
 
   ::fwrite(&totalStr,sizeof(char),strlen(totalStr),f);
   ::fwrite(&sep,sizeof(char),1,f);
-  ::fwrite(&it->second,sizeof(uint64_t),1,f);
+  ::fwrite(&total,sizeof(uint64_t),1,f);
   ::fwrite(&lf,sizeof(char),2,f);
-  return total;
 }
 
 void Kangaroo::SaveServerDPStats() {
