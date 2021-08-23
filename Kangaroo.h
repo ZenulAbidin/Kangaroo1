@@ -261,7 +261,7 @@ private:
   uint64_t totalRW;
   uint64_t nDPs; // Used by client
   // Used by server to map addresses to DP counts
-  std::map<char *, uint64_t> clientDPCount;
+  std::map<std::string, uint64_t> clientDPCount;
 
   Int jumpDistance[NB_JUMP];
   Int jumpPointx[NB_JUMP];

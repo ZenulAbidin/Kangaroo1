@@ -410,7 +410,7 @@ void Kangaroo::SaveDPStats(string fileName,FILE *f) {
 
   for (auto it = clientDPCount.begin(); it != clientDPCount.end(); it++) {
     count = snprintf(outint64, 20, "%llu", it->second);
-    ::fwrite(it->first,sizeof(char),strlen(it->first),f);
+    ::fwrite(it->first.c_str(),sizeof(char),it->first.length(),f);
     ::fwrite(&sep,sizeof(char),1,f);
     ::fwrite(&outint64,sizeof(char),count,f);
     ::fwrite(&lf,sizeof(char),2,f);
