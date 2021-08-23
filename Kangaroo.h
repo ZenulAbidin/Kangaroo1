@@ -236,7 +236,7 @@ private:
   int  nbCPUThread;
   int  nbGPUThread;
   double startTime;
-  string workerName;
+  std::string workerName;
 
   // Range
   int rangePower;
