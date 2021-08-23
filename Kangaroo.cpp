@@ -34,13 +34,14 @@ using namespace std;
 // ----------------------------------------------------------------------------
 
 Kangaroo::Kangaroo(Secp256K1 *secp,int32_t initDPSize,bool useGpu,string &workFile,string &iWorkFile,uint32_t savePeriod,bool saveKangaroo,bool saveKangarooByServer,
-                   double maxStep,int wtimeout,int port,int ntimeout,string serverIp,string outputFile,bool splitWorkfile,std::string countFile, int countPeriod) {
+                   double maxStep,int wtimeout,int port,int ntimeout,string serverIp,string outputFile,bool splitWorkfile,std::string countFile,int countPeriod,std::string& workerName) {
 
   this->secp = secp;
   this->initDPSize = initDPSize;
   this->useGpu = useGpu;
   this->offsetCount = 0;
   this->offsetTime = 0.0;
+  this->workerName = workerName;
   this->workFile = workFile;
   this->countFile = countFile;
   this->saveWorkPeriod = savePeriod;

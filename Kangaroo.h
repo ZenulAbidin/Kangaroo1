@@ -130,7 +130,7 @@ public:
 
   Kangaroo(Secp256K1 *secp,int32_t initDPSize,bool useGpu,std::string &workFile,std::string &iWorkFile,
            uint32_t savePeriod,bool saveKangaroo,bool saveKangarooByServer,double maxStep,int wtimeout,int sport,int ntimeout,
-           std::string serverIp,std::string outputFile,bool splitWorkfile, std::string countFile, int countPeriod);
+           std::string serverIp,std::string outputFile,bool splitWorkfile, std::string countFile, int countPeriod, std::string workerName);
   void Run(int nbThread,std::vector<int> gpuId,std::vector<int> gridSize);
   void RunServer();
   bool ParseConfigFile(std::string &fileName);
@@ -235,6 +235,7 @@ private:
   int  nbCPUThread;
   int  nbGPUThread;
   double startTime;
+  string workerName;
 
   // Range
   int rangePower;

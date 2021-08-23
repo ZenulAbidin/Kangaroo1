@@ -32,6 +32,7 @@ Kangaroo [-v] [-t nbThread] [-d dpBit] [gpu] [-check]
  -t nbThread: Secify number of thread
  -dpcount countfile: Specify file to save running DP count stats into (server only)
  -dpi countInverval: Periodic interval (in seconds) for saving DP count stats (server only)
+ -wname workerName: Specify worker name, up to 32 alphanumeric or underscore characters max, (client only)
  -w workfile: Specify file to save work into (current processed key only)
  -i workfile: Specify file to load work from (current processed key only)
  -wi workInterval: Periodic interval (in seconds) for saving work

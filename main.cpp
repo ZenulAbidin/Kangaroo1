@@ -353,7 +353,7 @@ int main(int argc, char* argv[]) {
   }
 
   Kangaroo *v = new Kangaroo(secp,dp,gpuEnable,workFile,iWorkFile,savePeriod,saveKangaroo,saveKangarooByServer,
-                             maxStep,wtimeout,port,ntimeout,serverIP,outputFile,splitWorkFile,countFile,countPeriod);
+                             maxStep,wtimeout,port,ntimeout,serverIP,outputFile,splitWorkFile,countFile,countPeriod,workerName);
   if(checkFlag) {
     v->Check(gpuId,gridSize);  
     exit(0);
