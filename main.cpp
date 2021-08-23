@@ -43,6 +43,7 @@ void printUsage() {
   printf(" -t nbThread: Secify number of thread\n");
   printf(" -dpcount countfile: Specify file to save running DP count stats into (server only)\n");
   printf(" -dpi countInverval: Periodic interval (in seconds) for saving DP count stats (server only)\n");
+  printf(" -wname workerName: Specify worker name, up to 32 alphanumeric or underscore characters max, (client only)\n");
   printf(" -w workfile: Specify file to save work into (current processed key only)\n");
   printf(" -i workfile: Specify file to load work from (current processed key only)\n");
   printf(" -wi workInterval: Periodic interval (in seconds) for saving work\n");
@@ -150,6 +151,7 @@ static string workFile = "";
 static string checkWorkFile = "";
 static string iWorkFile = "";
 static string countFile = "";
+static string workerName = "";
 static uint32_t savePeriod = 60;
 static uint32_t countPeriod = 60;
 static bool saveKangaroo = false;
@@ -219,6 +221,10 @@ int main(int argc, char* argv[]) {
     } else if(strcmp(argv[a],"-dpi") == 0) {
       CHECKARG("-dpi",1);
       countPeriod = getInt("dpCountInterval", argv[a]);
+      a++;
+    } else if(strcmp(argv[a],"-wname") == 0) {
+      CHECKARG("-wname",1);
+      workerName = string(argv[a]);
       a++;
     } else if(strcmp(argv[a],"-i") == 0) {
       CHECKARG("-i",1);
@@ -322,6 +328,17 @@ int main(int argc, char* argv[]) {
 
   if (countFile != "" && !serverMode) {
     printf("Error: -dpcount requires server mode (-s)");
+    exit(-1);
+  }
+
+  if (workerName.length() > 32 || workerName.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_") != std::string::npos) {
+    printf("Error: invalid worker name, must have only alphanumreic and underscore characters\n"
+           "and be less than 32 characters in length\n");
+    exit(-1);
+  }
+
+  if (workerName != "" && serverMode) {
+    printf("Error: -wname requires client mode (-c)");
     exit(-1);
   }
 
