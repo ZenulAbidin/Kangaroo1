@@ -400,9 +400,9 @@ void Kangaroo::SaveDPStats(string fileName,FILE *f) {
    * on Windows and Unix while simultaneously being machine-processed as a
    * CSV file.
    */
-  const char* sep = ",";
-  const char* lf = "\r\n";
-  const char* totalStr = "Total";
+  const char sep[] = ",";
+  const char lf[] = "\r\n";
+  const char totalStr[] = "Total";
   ::printf("\nSaveDPStats: %s",fileName.c_str());
   uint64_t total = 0;
 
