@@ -107,6 +107,7 @@ typedef struct {
   uint32_t threadId;
   uint32_t processId;
   uint32_t gpuId;
+  char workerName[32];
 
 } DPHEADER;
 

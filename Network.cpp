@@ -532,11 +532,11 @@ bool Kangaroo::HandleRequest(TH_PARAM *p) {
 
       if(head.nbDP == 0) {
 
-        ::printf("\nUnexpected number of DP [%d] from %s\n",head.nbDP,p->clientInfo);
+        ::printf("\nUnexpected number of DP [%d] from %s, worker \"%s\"\n",head.nbDP,p->clientInfo, head.workerName);
         CLIENT_ABORT();
 
       } else {
-        std::string key(p->clientInfo);
+        std::string key(head.workerName);
 
         auto it = clientDPCount.find(p->clientInfo);
         if (it == clientDPCount.end()) {
@@ -545,7 +545,7 @@ bool Kangaroo::HandleRequest(TH_PARAM *p) {
           clientDPCount.insert(std::pair<std::string,uint64_t>(key, head.nbDP));
         }
 
-        ::printf("%d DP from %s (total %lu), \n",head.nbDP, p->clientInfo, clientDPCount[key]);
+        ::printf("%d DP from %s, worker \"%s\" (total %lu), \n",head.nbDP, p->clientInfo, clientDPCount[key], head.workerName);
 
         DP *dp = (DP *)malloc(sizeof(DP)* head.nbDP);
         GETFREE("DP",p->clientSock,dp,sizeof(DP)* head.nbDP,ntimeout,dp);
@@ -718,7 +718,7 @@ void Kangaroo::RunServer() {
     exit(-1);
   }
 
-  if(sizeof(DPHEADER) != 20) {
+  if(sizeof(DPHEADER) != 52) {
     ::printf("Error: Invalid DPHEADER size struct\n");
     exit(-1);
   }
@@ -1196,6 +1196,7 @@ bool Kangaroo::SendToServer(std::vector<ITEM> &dps,uint32_t threadId,uint32_t gp
     head.processId = pid;
     head.threadId = threadId;
     head.gpuId = gpuId;
+    strncpy(head.workerName, workerName.c_str(), 32);
 
     PUTFREE("CMD",serverConn,&cmd,1,ntimeout,dp);
     PUTFREE("DPHeader",serverConn,&head,sizeof(DPHEADER),ntimeout,dp);
