@@ -403,20 +403,23 @@ void Kangaroo::SaveDPStats(string fileName,FILE *f) {
   const char sep[] = ",";
   const char lf[] = "\r\n";
   const char totalStr[] = "Total";
+  char outint64[20];  // A uint64_t takes at most 20 base10 digits
   ::printf("\nSaveDPStats: %s",fileName.c_str());
   uint64_t total = 0;
 
   for (auto it = clientDPCount.begin(); it != clientDPCount.end(); it++) {
+    snprintf(outint64, 20, "%lld", it->second);
     ::fwrite(&it->first,sizeof(char),strlen(it->first),f);
     ::fwrite(&sep,sizeof(char),1,f);
-    ::fwrite(&it->second,sizeof(uint64_t),1,f);
+    ::fwrite(&outint64,sizeof(char),20,f);
     ::fwrite(&lf,sizeof(char),2,f);
     total += it->second;
   }
 
+  snprintf(outint64, 20, "%lld", total);
   ::fwrite(&totalStr,sizeof(char),strlen(totalStr),f);
   ::fwrite(&sep,sizeof(char),1,f);
-  ::fwrite(&total,sizeof(uint64_t),1,f);
+  ::fwrite(&outint64,sizeof(char),20,f);
   ::fwrite(&lf,sizeof(char),2,f);
 }
 
