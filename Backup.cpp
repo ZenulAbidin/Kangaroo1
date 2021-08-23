@@ -406,20 +406,21 @@ void Kangaroo::SaveDPStats(string fileName,FILE *f) {
   char outint64[20];  // A uint64_t takes at most 20 base10 digits
   ::printf("\nSaveDPStats: %s",fileName.c_str());
   uint64_t total = 0;
+  size_t count;
 
   for (auto it = clientDPCount.begin(); it != clientDPCount.end(); it++) {
-    snprintf(outint64, 20, "%llu", it->second);
+    count = snprintf(outint64, 20, "%llu", it->second);
     ::fwrite(&it->first,sizeof(char),strlen(it->first),f);
     ::fwrite(&sep,sizeof(char),1,f);
-    ::fwrite(&outint64,sizeof(char),20,f);
+    ::fwrite(&outint64,sizeof(char),count,f);
     ::fwrite(&lf,sizeof(char),2,f);
     total += it->second;
   }
 
-  snprintf(outint64, 20, "%llu", total);
+  count = snprintf(outint64, 20, "%llu", total);
   ::fwrite(&totalStr,sizeof(char),strlen(totalStr),f);
   ::fwrite(&sep,sizeof(char),1,f);
-  ::fwrite(&outint64,sizeof(char),20,f);
+  ::fwrite(&outint64,sizeof(char),count,f);
   ::fwrite(&lf,sizeof(char),2,f);
 }
 
