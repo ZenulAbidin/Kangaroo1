@@ -542,7 +542,8 @@ bool Kangaroo::HandleRequest(TH_PARAM *p) {
         if (it == clientDPCount.end()) {
           clientDPCount[p->clientInfo] = it->second+head.nbDP;
         } else {
-          clientDPCount.insert(std::pair<std::string,uint64_t>(key, head.nbDP));
+          uint64_t count = clientDPCount[p->clientInfo];
+          clientDPCount.insert(std::pair<std::string,uint64_t>(key, count+head.nbDP));
         }
 
         ::printf("%d DP from %s, worker \"%s\" (total %lu), \n",head.nbDP, p->clientInfo, clientDPCount[key], head.workerName);
