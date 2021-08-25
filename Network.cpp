@@ -546,7 +546,7 @@ bool Kangaroo::HandleRequest(TH_PARAM *p) {
           clientDPCount.insert(std::pair<std::string,uint64_t>(key, count+head.nbDP));
         }
 
-        ::printf("%d DP from %s, worker \"%s\" (total %lu), \n",head.nbDP, p->clientInfo, clientDPCount[key], head.workerName);
+        ::printf("%d DP from %s, worker \"%s\" (total %lu), \n",head.nbDP, p->clientInfo, key.c_str(), head.workerName);
 
         DP *dp = (DP *)malloc(sizeof(DP)* head.nbDP);
         GETFREE("DP",p->clientSock,dp,sizeof(DP)* head.nbDP,ntimeout,dp);
