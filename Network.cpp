@@ -538,11 +538,11 @@ bool Kangaroo::HandleRequest(TH_PARAM *p) {
       } else {
         std::string key(head.workerName);
 
-        auto it = clientDPCount.find(p->clientInfo);
+        auto it = clientDPCount.find(key);
         if (it == clientDPCount.end()) {
-          clientDPCount[p->clientInfo] = it->second+head.nbDP;
+          clientDPCount[key] = it->second+head.nbDP;
         } else {
-          uint64_t count = clientDPCount[p->clientInfo];
+          uint64_t count = clientDPCount[key];
           clientDPCount.insert(std::pair<std::string,uint64_t>(key, count+head.nbDP));
         }
 
